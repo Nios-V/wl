@@ -22,7 +22,7 @@ func newAddCmd() *cobra.Command {
 }
 
 func addEntry(cmd *cobra.Command, args []string) error {
-	text, tags := entry.ParseTags(strings.Join(args, "  "))
+	text, tags := entry.ParseTags(strings.Join(args, " "))
 	if text == "" {
 		return errors.New("la entrada no tiene texto")
 	}

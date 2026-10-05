@@ -31,6 +31,23 @@ var migrations = [][]string{
 		)`,
 		`CREATE INDEX idx_entries_created_at ON entries(created_at)`,
 	},
+	{
+		`CREATE TABLE todos (
+			id         INTEGER PRIMARY KEY,
+			created_at TEXT NOT NULL,
+			text       TEXT NOT NULL,
+			done_at    TEXT
+		)`,
+	},
+	{
+		`CREATE TABLE summaries (
+			kind       TEXT NOT NULL CHECK (kind IN ('day', 'sprint')),
+			period     TEXT NOT NULL,
+			text       TEXT NOT NULL,
+			updated_at TEXT NOT NULL,
+			PRIMARY KEY (kind, period)
+		)`,
+	},
 }
 
 func Open(path string) (*Store, error) {

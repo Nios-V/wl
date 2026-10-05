@@ -4,6 +4,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/Nios-V/wl/internal/config"
 	"github.com/Nios-V/wl/internal/store"
 	"github.com/spf13/cobra"
 )
@@ -26,18 +27,32 @@ func newRootCmd() *cobra.Command {
 		},
 	}
 	root.CompletionOptions.DisableDefaultCmd = true
-	root.AddCommand(newAddCmd(), newTodayCmd(), newYesterdayCmd(), newUndoCmd())
+	root.AddCommand(newAddCmd(), newTodayCmd(), newYesterdayCmd(), newUndoCmd(),
+		newTodoCmd(), newSummaryCmd(), newSprintCmd())
 	return root
 }
 
-func openStore() (*store.Store, error) {
+func wlDir() (string, error) {
 	home, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+	dir := filepath.Join(home, ".wl")
+	return dir, os.MkdirAll(dir, 0o755)
+}
+
+func openStore() (*store.Store, error) {
+	dir, err := wlDir()
 	if err != nil {
 		return nil, err
 	}
-	dir := filepath.Join(home, ".wl")
-	if err := os.MkdirAll(dir, 0o755); err != nil {
-		return nil, err
-	}
 	return store.Open(filepath.Join(dir, "wl.db"))
+}
+
+func loadConfig() (config.Config, error) {
+	dir, err := wlDir()
+	if err != nil {
+		return config.Config{}, err
+	}
+	return config.Load(filepath.Join(dir, "config.yaml"))
 }

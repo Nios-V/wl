@@ -23,3 +23,24 @@ func PreviousWorkday(t time.Time) time.Time {
 	}
 	return t.AddDate(0, 0, -days)
 }
+
+const DateLayout = "2006-01-02"
+
+func SprintRange(anchor, t time.Time, days int) (time.Time, time.Time) {
+	anchor = StartOfDay(anchor)
+	diff := daysBetween(anchor, t)
+	n := diff / days
+	if diff < 0 && diff%days != 0 {
+		n--
+	}
+	start := anchor.AddDate(0, 0, n*days)
+	return start, start.AddDate(0, 0, days)
+}
+
+func daysBetween(a, b time.Time) int {
+	ay, am, ad := a.Date()
+	by, bm, bd := b.Date()
+	ua := time.Date(ay, am, ad, 0, 0, 0, 0, time.UTC)
+	ub := time.Date(by, bm, bd, 0, 0, 0, 0, time.UTC)
+	return int(ub.Sub(ua).Hours() / 24)
+}

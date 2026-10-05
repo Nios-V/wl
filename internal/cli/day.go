@@ -5,6 +5,7 @@ import (
 
 	"github.com/Nios-V/wl/internal/entry"
 	"github.com/Nios-V/wl/internal/render"
+	"github.com/Nios-V/wl/internal/store"
 	"github.com/spf13/cobra"
 )
 
@@ -42,6 +43,17 @@ func showDay(cmd *cobra.Command, day time.Time) error {
 	if err != nil {
 		return err
 	}
-	render.Day(cmd.OutOrStdout(), from, entries)
+	summary, err := st.Summary(store.KindDay, from.Format(entry.DateLayout))
+	if err != nil {
+		return err
+	}
+	todos, err := st.OpenTodos()
+	if err != nil {
+		return err
+	}
+
+	out := cmd.OutOrStdout()
+	render.Day(out, from, entries, summary)
+	render.Todos(out, todos)
 	return nil
 }
